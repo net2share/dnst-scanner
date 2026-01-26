@@ -10,7 +10,7 @@ A tool to scan and identify recursive DNS resolvers compatible with DNS tunnelin
   2. **E2E validation**: Verify resolvers can establish actual DNS tunnels
 - Concurrent scanning with configurable parallelism
 - Output working resolvers in various formats (plain list, JSON)
-- Can be used standalone or integrated into [dnstc](https://github.com/net2share/dnstc)
+- Standalone CLI tool, orchestrated by [dnstc](https://github.com/net2share/dnstc)
 
 ## Architecture
 
@@ -101,25 +101,15 @@ dnst-scanner scan --workers 100 --timeout 5s
 
 ## Integration with dnstc
 
-dnst-scanner can be used as a library by dnstc:
+dnstc orchestrates dnst-scanner as a subprocess:
+- dnstc runs dnst-scanner with appropriate flags
+- Scanner outputs JSON to stdout
+- dnstc parses results and updates resolver pool
+- Scheduled periodic runs keep resolver list fresh
 
-```go
-import "github.com/net2share/dnst-scanner/pkg/scanner"
-
-// Create scanner
-s := scanner.New(scanner.Config{
-    Workers: 50,
-    Timeout: 3 * time.Second,
-})
-
-// Run basic scan
-responding, err := s.BasicScan(ctx, rawIPs)
-
-// Run E2E validation
-tunnelCapable, err := s.E2EScan(ctx, responding, scanner.E2EConfig{
-    SlipstreamHealth: "hc-s.example.com",
-    DNSTTHealth:      "hc-d.example.com",
-})
+```bash
+# Example: dnstc runs scanner and captures JSON output
+dnst-scanner scan --format json --slipstream-health hc-s.example.com
 ```
 
 ## Requirements
