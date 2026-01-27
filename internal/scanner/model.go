@@ -15,7 +15,8 @@ type DomainResult struct {
 }
 
 type ScanResult struct {
-	IP             string          `json:"ip"`
-	Classification Classification   `json:"classification"`
-	Domains        []DomainResult  `json:"domains"`
+	IP             string         `json:"ip"`
+	PingOK         bool           `json:"ping_ok"`
+	Classification Classification  `json:"classification"`
+	Domains        []DomainResult `json:"domains"`
 }

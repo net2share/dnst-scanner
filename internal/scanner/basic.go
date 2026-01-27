@@ -5,6 +5,8 @@ import "time"
 func BasicScan(ip string, tunnelDomain string, timeout time.Duration) ScanResult {
 	results := make([]DomainResult, 0)
 
+	pingOK := PingCheck(ip, timeout)
+
 	allDomains := append([]string{}, NormalDomains...)
 	allDomains = append(allDomains, BlockedDomains...)
 	allDomains = append(allDomains, tunnelDomain)
@@ -26,6 +28,7 @@ func BasicScan(ip string, tunnelDomain string, timeout time.Duration) ScanResult
 
 	return ScanResult{
 		IP:             ip,
+		PingOK:         pingOK,
 		Classification: class,
 		Domains:        results,
 	}
