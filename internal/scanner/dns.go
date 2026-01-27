@@ -7,7 +7,7 @@ import (
 	"github.com/miekg/dns"
 )
 
-func QueryA(resolver, domain string, timeout time.Duration) bool {
+func QueryAWithResponse(resolver, domain string, timeout time.Duration) (*dns.Msg, error) {
 	m := new(dns.Msg)
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeA)
 	m.RecursionDesired = true
@@ -20,11 +20,8 @@ func QueryA(resolver, domain string, timeout time.Duration) bool {
 	defer cancel()
 
 	r, _, err := c.ExchangeContext(ctx, m, resolver+":53")
-	if err != nil || r == nil {
-		return false
+	if err != nil {
+		return nil, err
 	}
-	if r.Rcode != dns.RcodeSuccess {
-		return false
-	}
-	return len(r.Answer) > 0
+	return r, nil
 }

@@ -1,15 +1,32 @@
 package scanner
 
-import (
-	"net"
-	"time"
-)
+import "time"
 
-func TestResolver(ip string, timeout time.Duration) bool {
-	conn, err := net.DialTimeout("udp", ip+":53", timeout)
-	if err != nil {
-		return false
+func BasicScan(ip string, tunnelDomain string, timeout time.Duration) ScanResult {
+	results := make([]DomainResult, 0)
+
+	allDomains := append([]string{}, NormalDomains...)
+	allDomains = append(allDomains, BlockedDomains...)
+	allDomains = append(allDomains, tunnelDomain)
+
+	for _, d := range allDomains {
+		msg, err := QueryAWithResponse(ip, d, timeout)
+		if err != nil {
+			results = append(results, DomainResult{
+				Domain:   d,
+				Resolved: false,
+				Hijacked: false,
+			})
+			continue
+		}
+		results = append(results, analyzeResponse(d, msg))
 	}
-	conn.Close()
-	return true
+
+	class := classify(results)
+
+	return ScanResult{
+		IP:             ip,
+		Classification: class,
+		Domains:        results,
+	}
 }
