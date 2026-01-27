@@ -10,7 +10,7 @@ func BasicScan(ip string, tunnelDomain string, timeout time.Duration) ScanResult
 	allDomains = append(allDomains, tunnelDomain)
 
 	for _, d := range allDomains {
-		msg, err := QueryAWithResponse(ip, d, timeout)
+		msg, err := ResolveWithRetry(ip, d, timeout)
 		if err != nil {
 			results = append(results, DomainResult{
 				Domain:   d,
