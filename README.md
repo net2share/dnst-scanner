@@ -55,6 +55,7 @@ A tool to scan and identify recursive DNS resolvers compatible with DNS tunnelin
 ### Step 2: E2E Validation (Optional)
 
 Tests resolvers with actual tunnel connections:
+
 - Requires Slipstream/DNSTT client binaries
 - Connects through each resolver to health check endpoint
 - Verifies complete tunnel path works
@@ -83,32 +84,33 @@ dnst-scanner scan --tunnel-domain t.example.com --format json --output results.j
 
 ## Configuration
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--input` | Custom resolver IP list file | Fetch from ir-resolvers |
-| `--tunnel-domain` | NS subdomain to test tunnel reachability | Required |
-| `--e2e` | Enable E2E validation with actual tunnels | false |
-| `--slipstream-health` | Slipstream health check domain (for E2E) | - |
-| `--slipstream-fingerprint` | Slipstream TLS fingerprint (for E2E) | - |
-| `--dnstt-health` | DNSTT health check domain (for E2E) | - |
-| `--dnstt-pubkey` | DNSTT public key (for E2E) | - |
-| `--workers` | Number of concurrent workers | 50 |
-| `--timeout` | Timeout per resolver | 3s |
-| `--output` | Output file path | stdout |
-| `--format` | Output format: `plain` or `json` | `json` |
+| Option                     | Description                               | Default                 |
+| -------------------------- | ----------------------------------------- | ----------------------- |
+| `--input`                  | Custom resolver IP list file              | Fetch from ir-resolvers |
+| `--tunnel-domain`          | NS subdomain to test tunnel reachability  | Required                |
+| `--e2e`                    | Enable E2E validation with actual tunnels | false                   |
+| `--slipstream-health`      | Slipstream health check domain (for E2E)  | -                       |
+| `--slipstream-fingerprint` | Slipstream TLS fingerprint (for E2E)      | -                       |
+| `--dnstt-health`           | DNSTT health check domain (for E2E)       | -                       |
+| `--dnstt-pubkey`           | DNSTT public key (for E2E)                | -                       |
+| `--workers`                | Number of concurrent workers              | 50                      |
+| `--timeout`                | Timeout per resolver                      | 3s                      |
+| `--output`                 | Output file path                          | stdout                  |
+| `--format`                 | Output format: `plain` or `json`          | `json`                  |
 
 ### Environment Variable Overrides
 
-| Variable | Description |
-|----------|-------------|
-| `DNST_SCANNER_RESOLVERS_URL` | Override default ir-resolvers URL |
-| `DNST_SCANNER_RESOLVERS_PATH` | Use local file (skips download) |
-| `DNST_SCANNER_SLIPSTREAM_PATH` | Path to slipstream-client binary |
-| `DNST_SCANNER_DNSTT_PATH` | Path to dnstt-client binary |
+| Variable                       | Description                       |
+| ------------------------------ | --------------------------------- |
+| `DNST_SCANNER_RESOLVERS_URL`   | Override default ir-resolvers URL |
+| `DNST_SCANNER_RESOLVERS_PATH`  | Use local file (skips download)   |
+| `DNST_SCANNER_SLIPSTREAM_PATH` | Path to slipstream-client binary  |
+| `DNST_SCANNER_DNSTT_PATH`      | Path to dnstt-client binary       |
 
 ## Integration with dnstc
 
 dnstc orchestrates dnst-scanner as a subprocess:
+
 - dnstc runs dnst-scanner with appropriate flags
 - Scanner outputs JSON to stdout
 - dnstc parses results and updates resolver pool
@@ -132,3 +134,13 @@ dnst-scanner scan --tunnel-domain t.example.com --format json
 - [dnstm](https://github.com/net2share/dnstm) - DNS tunnel server (hosts health check endpoints)
 - [ir-resolvers](https://github.com/net2share/ir-resolvers) - Raw resolver IP list
 - [go-corelib](https://github.com/net2share/go-corelib) - Shared Go library
+
+### Slipstream E2E (Platform Note)
+
+Slipstream E2E validation requires the Slipstream client binary.
+At the moment, official Slipstream client binaries are only available for Linux.
+
+- Windows: E2E will report a clear error if the binary is not present
+- Linux / CI / WSL: Full Slipstream E2E validation is supported
+
+This is expected behavior.
