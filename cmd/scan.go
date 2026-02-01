@@ -21,4 +21,6 @@ var scanCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
+	scanCmd.Flags().String("tunnel-domain", "", "Tunnel domain to test")
+	scanCmd.MarkFlagRequired("tunnel-domain")
 }
